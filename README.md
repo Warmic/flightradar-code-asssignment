@@ -16,6 +16,11 @@ Create new Ticket
 Cancel Ticket
 Bonus task: ability to change seat for a given ticket
 
+## [You can find documentation here](public/documentation.yaml)
+
+To view it properly, either paste its content here https://editor.swagger.io/ or open file located at (public/documentation.yaml) via IDE
+and use plugin to render it
+
 ## How to set up application
 
 To install packages
@@ -24,7 +29,7 @@ To install packages
 make composer
 ```
 
-To install packages and start containers
+To install packages and start containers. Server will be available at localhost:80
 
 ```
 make setup
