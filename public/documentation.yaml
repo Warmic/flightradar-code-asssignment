@@ -1,0 +1,173 @@
+openapi: 3.0.3
+info:
+  title: NKGF
+  description: NKGF backend
+  version: 1.0.0
+servers:
+  - url: http://localhost/api/v1
+tags:
+  - name: tickets
+  - name: airports
+  - name: passports
+  - name: flights
+paths:
+  /flights:
+    get:
+      tags: [ flights ]
+      responses:
+        200:
+          description: All flights
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Flight'
+  /passports:
+    get:
+      tags: [ passports ]
+      responses:
+        200:
+          description: All passports
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Passport'
+  /airports:
+    get:
+      tags: [ airports ]
+      responses:
+        200:
+          description: All airports
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Airport'
+  /tickets:
+    post:
+      tags: [ tickets ]
+      summary: Create a ticket
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewTicketRequest'
+      responses:
+        201:
+          description: ticket created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticket'
+        400:
+          $ref: '#/components/responses/BadRequestResponse'
+  /tickets/{id}:
+    patch:
+      tags: [ tickets ]
+      summary: Update a ticket
+      parameters:
+        - $ref: '#/components/parameters/ModelId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTicketRequest'
+      responses:
+        200:
+          description: Ticket has been updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticket'
+    delete:
+      tags: [ tickets ]
+      summary: Delete a ticket
+      responses:
+        200:
+          description: Ticket has been deleted
+        400:
+          $ref: '#/components/responses/BadRequestResponse'
+components:
+  parameters:
+    ModelId:
+      in: path
+      name: id
+      required: true
+      description: Model identifier
+  schemas:
+    Ticket:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        seatId:
+          type: integer
+        passportId:
+          type: string
+          format: uuid
+        flight:
+          $ref: '#/components/schemas/Flight'
+      required: [ id, seatId, passportId, flight ]
+    Flight:
+      type: object
+      required: [ id, departureTime, sourceAirport, destinationAirport ]
+      properties:
+        id:
+          type: string
+          format: string
+        departureTime:
+          type: string
+          format: date-time
+        sourceAirport:
+          $ref: '#/components/schemas/Airport'
+        destinationAirport:
+          $ref: '#/components/schemas/Airport'
+    Passport:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+    Airport:
+      type: object
+      properties:
+        id:
+          type: string
+        code:
+          type: string
+          example: TBI
+    NewTicketRequest:
+      type: object
+      required: [ flightId, passportId ]
+      properties:
+        flightId:
+          type: string
+        passportId:
+          type: string
+    UpdateTicketRequest:
+      type: object
+      required: [ seatId ]
+      properties:
+        seatId:
+          type: integer
+    ErrorModel:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+  responses:
+    BadRequestResponse:
+      description: Bad request
